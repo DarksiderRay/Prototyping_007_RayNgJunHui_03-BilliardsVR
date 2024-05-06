@@ -24,12 +24,10 @@ public class CueStick : MonoBehaviour
         xrGrabInteractable.selectEntered.AddListener(arg0 =>
         {
             AddXRInteractor(arg0.interactorObject);
-            Debug.Log($"Select Entered: {arg0.interactorObject.transform.name}");
         });
         xrGrabInteractable.selectExited.AddListener(arg0 =>
         {
             RemoveXRInteractor(arg0.interactorObject);
-            Debug.Log($"Select Exited: {arg0.interactorObject.transform.name}");
         });
         xrGrabInteractable.activated.AddListener(arg0 =>
         {
@@ -38,8 +36,6 @@ public class CueStick : MonoBehaviour
             xrGrabInteractable.trackPosition = false;
             xrGrabInteractable.trackRotation = false;
             InitializeAim();
-            
-            Debug.Log($"Activated: {arg0.interactorObject.transform.name}");
         });
         xrGrabInteractable.deactivated.AddListener(arg0 =>
         {
@@ -47,8 +43,6 @@ public class CueStick : MonoBehaviour
             xrGrabInteractable.trackPosition = true;
             xrGrabInteractable.trackRotation = true;
             cueStickOnAim = false;
-            
-            Debug.Log($"Deactivated: {arg0.interactorObject.transform.name}");
         });
     }
 

@@ -22,7 +22,7 @@ public class BallPlacementManager : MonoBehaviour
 
 
     [Button]
-    private void ResetBalls()
+    public void ResetBalls()
     {
         cueBall.ResetPosition(cueBallPlacement.position);
         ball_1.ResetPosition(ballPlacement_1.position);
