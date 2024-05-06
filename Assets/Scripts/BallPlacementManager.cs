@@ -67,7 +67,6 @@ public class BallPlacementManager : MonoBehaviour
             PoolBall ball = originalBalls[Random.Range(0, originalBalls.Count)];
             shuffledBalls.Add(ball);
             originalBalls.Remove(ball);
-            Debug.Log(originalBalls.Count);
         }
 
         return shuffledBalls;

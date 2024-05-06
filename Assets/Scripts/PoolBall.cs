@@ -24,6 +24,17 @@ public class PoolBall : MonoBehaviour
     [Header("DEBUG")]
     [SerializeField] private Vector3 startDirection = Vector3.forward;
     [SerializeField] private float startVelocity = 1f;
+
+    private void OnCollisionEnter(Collision col)
+    {
+        if (!col.gameObject.TryGetComponent(out CueTip cueTip))
+            return;
+        
+        Debug.Log(col.impulse);
+        rigidbody.AddForce(cueTip.currentVelocity * cueTip.impulseMultiplier, ForceMode.Impulse);
+
+        //StartCoroutine(cueTip.TempDisableCollider());
+    }
     
     private void ResetRigidbody()
     {
@@ -40,7 +51,7 @@ public class PoolBall : MonoBehaviour
     [Button]
     private void SetStartVelocity()
     {
-        rigidbody.AddForce(startDirection * startVelocity, ForceMode.VelocityChange);
+        rigidbody.AddForce(startDirection * startVelocity, ForceMode.Impulse);
     }
 
     private void OnDrawGizmosSelected()
