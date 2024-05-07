@@ -6,6 +6,9 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class CueStick : MonoBehaviour
 {
+    [SerializeField] private CueTip cueTip;
+    
+    [Header("Interacatable Components")]
     [SerializeField] private XRGrabInteractable xrGrabInteractable;
     [SerializeField] private IXRSelectInteractor primaryXRInteractor;
     [SerializeField] private IXRSelectInteractor secondaryXRInteractor;
@@ -17,7 +20,6 @@ public class CueStick : MonoBehaviour
     private bool cueStickOnAim = false;
     private Vector3 cueStickInitialPos;
     private Vector3 cueStickDir;
-    private Vector3 primaryXRInteractorInitPos;
     
     void Awake()
     {
@@ -33,6 +35,9 @@ public class CueStick : MonoBehaviour
         {
             // lockUpDir = false;
             // upDir = transform.up;
+            if (secondaryXRInteractor == null)
+                return;
+            
             xrGrabInteractable.trackPosition = false;
             xrGrabInteractable.trackRotation = false;
             InitializeAim();
@@ -43,7 +48,13 @@ public class CueStick : MonoBehaviour
             xrGrabInteractable.trackPosition = true;
             xrGrabInteractable.trackRotation = true;
             cueStickOnAim = false;
+            cueTip.ToggleCollider(false);
         });
+    }
+
+    void Start()
+    {
+        cueTip.ToggleCollider(false);
     }
 
     void Update()
@@ -117,8 +128,10 @@ public class CueStick : MonoBehaviour
     private void InitializeAim()
     {
         cueStickOnAim = true;
+        cueTip.ToggleCollider(true);
         cueStickInitialPos = transform.position;
         cueStickDir = transform.up;
-        primaryXRInteractorInitPos = primaryXRInteractor.transform.position;
     }
+
+
 }

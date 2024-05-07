@@ -18,19 +18,33 @@ public class PoolBall : MonoBehaviour
     [SerializeField] private BallType ballType;
     [SerializeField] private int number;
 
-    [Header("Components")]
+    [Header("Physics Components")]
     [SerializeField] private Rigidbody rigidbody;
 
+    // [Header("Focus Indicator")]
+    // [SerializeField, ReadOnly] private bool isFocused = false;
+    // [SerializeField, ReadOnly] private Vector3 focusDir;
+    // [SerializeField] private LineRenderer lineIndicator;
+    // [SerializeField] private float sphereCastRadius;
+    // [SerializeField] private GameObject hitPointIndicatorObj;
+
     [Header("DEBUG")]
-    [SerializeField] private Vector3 startDirection = Vector3.forward;
+    [SerializeField] protected Vector3 startDirection = Vector3.forward;
     [SerializeField] private float startVelocity = 1f;
 
+    private void OnTriggerEnter(Collider col)
+    {
+        if (col.gameObject.TryGetComponent(out PoolTableHole hole))
+        {
+            gameObject.SetActive(false);
+        }
+    }
+    
     private void OnCollisionEnter(Collision col)
     {
         if (!col.gameObject.TryGetComponent(out CueTip cueTip))
             return;
         
-        Debug.Log(col.impulse);
         rigidbody.AddForce(cueTip.currentVelocity * cueTip.impulseMultiplier, ForceMode.Impulse);
 
         //StartCoroutine(cueTip.TempDisableCollider());
@@ -44,6 +58,7 @@ public class PoolBall : MonoBehaviour
 
     public void ResetPosition(Vector3 pos)
     {
+        gameObject.SetActive(true);
         transform.position = pos;
         ResetRigidbody();
     }
@@ -54,8 +69,5 @@ public class PoolBall : MonoBehaviour
         rigidbody.AddForce(startDirection * startVelocity, ForceMode.Impulse);
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        Debug.DrawLine(transform.position, transform.position + startDirection.normalized);
-    }
+    
 }
