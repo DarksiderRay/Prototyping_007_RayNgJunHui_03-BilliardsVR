@@ -32,14 +32,6 @@ public class CueTip : MonoBehaviour
             focusedCueBall.SetDirection(transform.up);
         }
     }
-    
-    public IEnumerator TempDisableCollider()
-    {
-        col.enabled = false;
-
-        yield return new WaitForSeconds(1f);
-        col.enabled = true;
-    }
 
     public void ToggleCollider(bool value)
     {

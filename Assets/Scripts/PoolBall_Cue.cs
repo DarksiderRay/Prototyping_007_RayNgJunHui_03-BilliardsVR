@@ -1,23 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
-using NaughtyAttributes;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 
 public class PoolBall_Cue : PoolBall
 {
     [Header("Focus Indicator")]
-    [SerializeField, ReadOnly] private bool isFocused = false;
-    [SerializeField, ReadOnly] private Vector3 focusDir;
-    [SerializeField] private LineRenderer lineIndicator;
+    [SerializeField, NaughtyAttributes.ReadOnly] private bool isFocused = false;
+    [SerializeField, NaughtyAttributes.ReadOnly] private Vector3 focusDir;
+    [SerializeField] private LineRenderer primaryLineIndicator;
+    [SerializeField] private LineRenderer secondaryLineIndicator;
     [SerializeField] private float sphereCastRadius;
     [SerializeField] private GameObject hitPointIndicatorObj;
+    [SerializeField] private LayerMask boundsLayerMask;
+    [SerializeField] private LayerMask ballLayerMask;
+
+    protected override void OnTriggerEnter(Collider col)
+    {
+        
+    }
     
     public void SetFocused(bool value)
     {
         isFocused = value;
 
-        lineIndicator.enabled = isFocused;
+        primaryLineIndicator.enabled = isFocused;
         hitPointIndicatorObj.SetActive(isFocused);
+        secondaryLineIndicator.enabled = isFocused;
     }
 
     public void SetDirection(Vector3 dir)
@@ -28,22 +37,41 @@ public class PoolBall_Cue : PoolBall
         linePositions.Add(transform.position);
         linePositions.Add(transform.position + focusDir);
 
-        lineIndicator.positionCount = linePositions.Count;
-        lineIndicator.SetPositions(linePositions.ToArray());
+        primaryLineIndicator.positionCount = linePositions.Count;
+        primaryLineIndicator.SetPositions(linePositions.ToArray());
 
         FindHitPoint();
     }
 
     private void FindHitPoint()
     {
-        if (Physics.SphereCast(transform.position, sphereCastRadius, focusDir, out var hit))
+        if (Physics.SphereCast(transform.position, sphereCastRadius, focusDir, out var hit, 
+                Mathf.Infinity, boundsLayerMask | ballLayerMask))
         {
             hitPointIndicatorObj.SetActive(true);
             hitPointIndicatorObj.transform.position = hit.point + hit.normal * sphereCastRadius;
+            primaryLineIndicator.SetPosition(1, hit.point);
+
+            secondaryLineIndicator.enabled = true;
+            List<Vector3> secondaryLinePositions = new();
+            secondaryLinePositions.Add(hit.point);
+            if (LayerMaskExtensions.Contains(boundsLayerMask, hit.collider.gameObject.layer))
+            {
+                secondaryLinePositions.Add(hit.point + Vector3.Reflect(focusDir, hit.normal));   
+            }
+            else if (LayerMaskExtensions.Contains(ballLayerMask, hit.collider.gameObject.layer))
+            {
+                secondaryLinePositions.Add(hit.point - hit.normal);
+            }
+            
+
+            secondaryLineIndicator.positionCount = secondaryLinePositions.Count;
+            secondaryLineIndicator.SetPositions(secondaryLinePositions.ToArray());
         }
         else
         {
             hitPointIndicatorObj.SetActive(false);
+            secondaryLineIndicator.enabled = false;
         }
     }
 

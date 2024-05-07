@@ -32,7 +32,7 @@ public class PoolBall : MonoBehaviour
     [SerializeField] protected Vector3 startDirection = Vector3.forward;
     [SerializeField] private float startVelocity = 1f;
 
-    private void OnTriggerEnter(Collider col)
+    protected virtual void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.TryGetComponent(out PoolTableHole hole))
         {
