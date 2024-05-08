@@ -31,11 +31,15 @@ public class PoolBall : MonoBehaviour
     [Header("DEBUG")]
     [SerializeField] protected Vector3 startDirection = Vector3.forward;
     [SerializeField] private float startVelocity = 1f;
+    
+    public delegate void OnBallPocketed(int ballNo);
+    public OnBallPocketed onBallPocketed;
 
     protected virtual void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.TryGetComponent(out PoolTableHole hole))
         {
+            onBallPocketed?.Invoke(number - 1);
             gameObject.SetActive(false);
         }
     }

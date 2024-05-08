@@ -20,7 +20,9 @@ public class BallPlacementManager : MonoBehaviour
     [SerializeField] private List<Transform> ballPlacements_Corners;
     [SerializeField] private List<Transform> ballPlacements_Remaining;
 
-
+    public delegate void OnResetBalls();
+    public OnResetBalls onResetBalls;
+    
     [Button]
     public void ResetBalls()
     {
@@ -55,6 +57,8 @@ public class BallPlacementManager : MonoBehaviour
             
             shuffledRemainingBalls[i].ResetPosition(ballPlacements_Remaining[i].position);
         }
+
+        onResetBalls?.Invoke();
     }
 
     private List<PoolBall> ShuffleBalls(List<PoolBall> originalBalls)
