@@ -57,11 +57,26 @@ public class PoolBall_Cue : PoolBall
             secondaryLinePositions.Add(hit.point);
             if (LayerMaskExtensions.Contains(boundsLayerMask, hit.collider.gameObject.layer))
             {
-                secondaryLinePositions.Add(hit.point + Vector3.Reflect(focusDir, hit.normal));   
+                var dir = Vector3.Reflect(focusDir, hit.normal);
+                float secondDist = 1;
+                if (Physics.Raycast(hit.point, dir, out var secondHit,
+                        1, boundsLayerMask | ballLayerMask))
+                {
+                    secondDist = Vector3.Distance(hit.point, secondHit.point);
+                }
+                secondaryLinePositions.Add(hit.point + dir.normalized * secondDist);   
             }
             else if (LayerMaskExtensions.Contains(ballLayerMask, hit.collider.gameObject.layer))
             {
-                secondaryLinePositions.Add(hit.point - hit.normal);
+                var dir = -hit.normal;
+                float secondDist = 1;
+                if (Physics.Raycast(hit.point, dir, out var secondHit,
+                        1, boundsLayerMask | ballLayerMask))
+                {
+                    secondDist = Vector3.Distance(hit.point, secondHit.point);
+                }
+                
+                secondaryLinePositions.Add(hit.point - hit.normal * secondDist);
             }
             
 

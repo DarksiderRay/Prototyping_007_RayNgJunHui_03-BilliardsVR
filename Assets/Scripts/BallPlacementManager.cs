@@ -22,6 +22,11 @@ public class BallPlacementManager : MonoBehaviour
 
     public delegate void OnResetBalls();
     public OnResetBalls onResetBalls;
+
+    private void Start()
+    {
+        ResetBalls();
+    }
     
     [Button]
     public void ResetBalls()

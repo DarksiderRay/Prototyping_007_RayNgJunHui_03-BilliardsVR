@@ -19,6 +19,8 @@ public class PoolBall : MonoBehaviour
     [SerializeField] private int number;
 
     [Header("Physics Components")]
+    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private Collider collider;
     [SerializeField] private Rigidbody rigidbody;
 
     // [Header("Focus Indicator")]
@@ -28,6 +30,12 @@ public class PoolBall : MonoBehaviour
     // [SerializeField] private float sphereCastRadius;
     // [SerializeField] private GameObject hitPointIndicatorObj;
 
+    [Header("Audio")] 
+    [SerializeField] private AudioSource sfxAudioSource;
+    [SerializeField] private AudioClip sfxClip_HitCueStick;
+    [SerializeField] private AudioClip sfxClip_HitBall;
+    [SerializeField] private AudioClip sfxClip_Pocketed;
+
     [Header("DEBUG")]
     [SerializeField] protected Vector3 startDirection = Vector3.forward;
     [SerializeField] private float startVelocity = 1f;
@@ -35,22 +43,40 @@ public class PoolBall : MonoBehaviour
     public delegate void OnBallPocketed(int ballNo);
     public OnBallPocketed onBallPocketed;
 
+    private void Awake()
+    {
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
+        collider = GetComponent<Collider>();
+        
+        sfxAudioSource = GetComponent<AudioSource>();
+    }
+    
     protected virtual void OnTriggerEnter(Collider col)
     {
         if (col.gameObject.TryGetComponent(out PoolTableHole hole))
         {
             onBallPocketed?.Invoke(number - 1);
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
+            meshRenderer.enabled = false;
+            collider.enabled = false;
+
+            sfxAudioSource.PlayOneShot(sfxClip_Pocketed);
         }
     }
     
     private void OnCollisionEnter(Collision col)
     {
-        if (!col.gameObject.TryGetComponent(out CueTip cueTip))
-            return;
+        if (col.gameObject.TryGetComponent(out CueTip cueTip))
+        {
+            rigidbody.AddForce(cueTip.currentVelocity * cueTip.impulseMultiplier, ForceMode.Impulse);
+            sfxAudioSource.PlayOneShot(sfxClip_HitCueStick);
+        }
+        else if (col.gameObject.TryGetComponent(out PoolBall _))
+        {
+            sfxAudioSource.PlayOneShot(sfxClip_HitBall);
+            //sfxAudioSource.volume = col.impulse.magnitude;
+        }
         
-        rigidbody.AddForce(cueTip.currentVelocity * cueTip.impulseMultiplier, ForceMode.Impulse);
-
         //StartCoroutine(cueTip.TempDisableCollider());
     }
     
@@ -62,7 +88,11 @@ public class PoolBall : MonoBehaviour
 
     public void ResetPosition(Vector3 pos)
     {
-        gameObject.SetActive(true);
+        StartCoroutine(TempDisableSFX());
+        
+        //gameObject.SetActive(true);
+        meshRenderer.enabled = true;
+        collider.enabled = true;
         transform.position = pos;
         ResetRigidbody();
     }
@@ -73,5 +103,10 @@ public class PoolBall : MonoBehaviour
         rigidbody.AddForce(startDirection * startVelocity, ForceMode.Impulse);
     }
 
-    
+    private IEnumerator TempDisableSFX()
+    {
+        sfxAudioSource.volume = 0;
+        yield return new WaitForSeconds(0.2f);
+        sfxAudioSource.volume = 1;
+    }
 }
