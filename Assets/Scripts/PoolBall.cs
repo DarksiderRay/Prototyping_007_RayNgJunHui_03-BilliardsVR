@@ -60,6 +60,8 @@ public class PoolBall : MonoBehaviour
             meshRenderer.enabled = false;
             collider.enabled = false;
 
+            hole.ShowText(number);
+            
             sfxAudioSource.PlayOneShot(sfxClip_Pocketed);
         }
     }

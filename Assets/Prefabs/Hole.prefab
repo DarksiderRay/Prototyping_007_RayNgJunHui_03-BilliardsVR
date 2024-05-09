@@ -688,6 +688,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cb7af37cca1e5e40af99813b0c59e16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ballPocketedText: {fileID: 9058422155980991173, guid: 0143bdb178b51e640bb3fe1c9764ce2d,
+    type: 3}
 --- !u!33 &8507053895285742293
 MeshFilter:
   m_ObjectHideFlags: 0
